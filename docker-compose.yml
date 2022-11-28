@@ -1,0 +1,41 @@
+services:
+  node:
+    build:
+      dockerfile: docker/api/Dockerfile
+    env_file: .env
+    volumes:
+      - ./:/api
+      - /node_modules
+    ports:
+      - 7777:7777
+    networks:
+      - side-stacker
+    depends_on:
+      - database
+    restart: always
+  database:
+    image: postgres:12.0-alpine
+    platform: linux/amd64 #for platform error on Apple M1 chips
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: sidestacker
+      POSTGRES_PASSWORD: sidestacker
+      POSTGRES_DB: sidestacker
+    volumes:
+      - ./docker/database/data:/docker-entrypoint-initdb.d
+      - side-stacker:/var/lib/postgresql/data/
+    networks:
+      - side-stacker
+  redis:
+    image: redislabs/redismod:latest
+    volumes:
+      - ./docker/data/:/data/
+    networks:
+      - side-stacker
+
+networks:
+  side-stacker:
+    driver: bridge
+volumes:
+  side-stacker:
