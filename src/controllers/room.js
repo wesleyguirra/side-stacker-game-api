@@ -1,4 +1,3 @@
-const { Repository } = require('redis-om');
 const {Board, Player, Room} = require("../models");
 const {Sequelize, Op} = require("sequelize");
 const sequelize = require("sequelize");

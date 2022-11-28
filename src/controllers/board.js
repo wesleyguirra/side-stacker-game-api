@@ -1,5 +1,3 @@
-const { Repository } = require('redis-om');
-const client = require("../config/redis");
 const boardSchema = require("../models/board");
 const roomSchema = require("../models/room");
 const {Board, Room, Player} = require("../models")
