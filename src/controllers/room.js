@@ -14,13 +14,13 @@ exports.createRoom = async (name, socketId) => {
       }
     })
 
-    if (!!count) return
+    if (!!count) return Promise.reject('Room already exists')
 
     const room = await Room.create({
       name,
       player1: socketId,
       player2: null,
-      turn: socketId
+      turn: 1
     })
 
     return Promise.resolve(room)
@@ -41,39 +41,41 @@ exports.findAvailableRoom = async (name, socketId) => {
     const room = await Room.findOne({
       where: {
         name,
-        player1: {
-          [sequelize.Op.not]: socketId
-        },
-        player2: null
+        [sequelize.Op.or]: [
+          {player1: null},
+          {player2: null}
+        ]
       },
       include: { model: Board }
     })
 
-    room.player2 = socketId
+    console.log(room)
 
-    await room.save()
+    if (room?.player2 === null) room.player2 = socketId
+    else if (room?.player1 === null) room.player1 = socketId
+
+    await room?.save()
 
     return Promise.resolve(room)
   } catch (e) {
     console.error(e)
+    throw e
   }
 }
 
 exports.disconnectPlayer = async (socketId) => {
   try {
-    await Room.destroy({
-      where: {
-        player1: socketId
-      }
-    })
     const rooms = await Room.findAll({
       where: {
-        player2: socketId
+        [sequelize.Op.or]: [
+          {player1: socketId},
+          {player2: socketId}
+        ]
       }
     })
-    rooms.forEach(room => room.removePlayer)
-    console.log(rooms)
+    await Promise.resolve(Promise.all(rooms.map(room => room.removePlayer(socketId))))
   } catch (e) {
     console.error(e)
+    throw e
   }
 }

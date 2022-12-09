@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       turn: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       player1: {
         type: Sequelize.STRING

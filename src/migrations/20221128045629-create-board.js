@@ -29,7 +29,7 @@ module.exports = {
       },
       values: {
         allowNull: true,
-        type: Sequelize.ARRAY(Sequelize.ARRAY(Sequelize.STRING))
+        type: Sequelize.ARRAY(Sequelize.ARRAY(Sequelize.INTEGER))
       },
       createdAt: {
         allowNull: false,

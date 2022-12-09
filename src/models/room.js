@@ -16,8 +16,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Room.init({
     name: DataTypes.STRING,
-    turn: DataTypes.STRING,
-    player1: DataTypes.STRING,
+    turn: DataTypes.INTEGER,
+    player1: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     player2: {
       type: DataTypes.STRING,
       allowNull: true
@@ -27,20 +30,41 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Room',
   });
 
-  Room.prototype.isPlayerTurn = function(player) {
-    return this.turn === player
-  }
-
   Room.prototype.alternateTurns = function() {
-    if (this.turn === this.player1) this.turn = this.player2
-    else this.turn = this.player1
+    switch (this.turn) {
+      case 1:
+        this.turn = 2
+        break
+      case 2:
+        this.turn = 1
+        break
+      default:
+        this.turn = null
+    }
     return this.turn
   }
 
   Room.prototype.removePlayer = async function(player) {
-    if (this.player1 === player) this.player1 === null
-    if (this.player2 === player) this.player2 === null
-    await this.save()
+    if (this.player1 === player) this.player1 = null
+    if (this.player2 === player) this.player2 = null
+    const result = await this.save()
+    return Promise.resolve(result)
   }
+
+  Room.prototype.getPlayerNumber = function(socketId) {
+    switch (socketId) {
+      case this.player1:
+        return 1
+      case this.player2:
+        return 2
+      default:
+        return null
+    }
+  }
+
+  Room.prototype.isPlayerTurn = function(player) {
+    return this.turn === this.getPlayerNumber(player)
+  }
+
   return Room;
 };

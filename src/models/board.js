@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     columns: DataTypes.INTEGER,
     rows: DataTypes.INTEGER,
     score: DataTypes.INTEGER,
-    values: DataTypes.ARRAY(DataTypes.ARRAY({type: DataTypes.STRING, allowNull: true})),
+    values: DataTypes.ARRAY(DataTypes.ARRAY({type: DataTypes.INTEGER, allowNull: true})),
   }, {
     sequelize,
     modelName: 'Board',
@@ -26,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
 
   Board.prototype.updateValues = function(x, y, value) {
     try {
-      console.log(x, y)
       if (!!this.values[x][y]) return Promise.resolve(this)
 
       const isFirst = y === 0
@@ -42,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       return this.values;
     } catch (e) {
       console.error(e)
+      throw e
     }
   }
   
