@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Room',
   });
+  
+  Room.afterSave(async (room) => {
+    if(room.player1 === null && room.player2 === null) await room.destroy()
+  })
 
   Room.prototype.alternateTurns = function() {
     switch (this.turn) {
