@@ -70,5 +70,10 @@ module.exports = (sequelize, DataTypes) => {
     return this.turn === this.getPlayerNumber(player)
   }
 
+
+  Room.prototype.isSinglePlayer = function() {
+    return !this.player2
+  }
+
   return Room;
 };

@@ -1,6 +1,7 @@
 const boardSchema = require("../models/board");
 const roomSchema = require("../models/room");
 const {Board, Room, Player} = require("../models")
+const {getRandomInRange} = require("../helpers");
 
 /**
  *
@@ -75,15 +76,17 @@ exports.updateBoard = async (roomName, x, y, socketId) => {
         RoomId: room.id
       }
     })
-    if (!room.isPlayerTurn(socketId)) return Promise.reject('Not your turn')
+    if (!room.isPlayerTurn(socketId) && room.player2 !== null) return Promise.reject('Not your turn')
     room.turn = room.alternateTurns()
     room = await room.save()
     board.values = board.updateValues(x, y, room.getPlayerNumber(socketId))
     board.changed('values', true)
     board = await board.save()
+    board.values = board.makeAIMove()
+    board.changed('values', true)
+    board = await board.save()
     return Promise.resolve({board, room})
   } catch (e) {
-    console.error(e.message)
     return Promise.reject(e.message)
   }
 }

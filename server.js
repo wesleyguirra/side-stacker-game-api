@@ -5,8 +5,8 @@ app.use(cors({origin: '*'}))
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const {findAvailableRoom, createRoom, disconnectPlayer} = require("./src/controllers/room");
-const {createBoard, updateBoard, resetBoard} = require("./src/controllers/board");
+const {findAvailableRoom, createRoom, disconnectPlayer, } = require("./src/controllers/room");
+const {createBoard, updateBoard, resetBoard, aiMove} = require("./src/controllers/board");
 const {checkWinner} = require("./src/helpers");
 const io = new Server(server, {
   cors: {

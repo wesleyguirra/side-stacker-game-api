@@ -1,6 +1,7 @@
 const {Board, Player, Room} = require("../models");
 const {Sequelize, Op} = require("sequelize");
 const sequelize = require("sequelize");
+const {resetBoard} = require("./board");
 
 exports.createRoom = async (name, socketId) => {
   try {
@@ -49,16 +50,15 @@ exports.findAvailableRoom = async (name, socketId) => {
       include: { model: Board }
     })
 
-    console.log(room)
-
     if (room?.player2 === null) room.player2 = socketId
     else if (room?.player1 === null) room.player1 = socketId
+
+    await resetBoard(room.name)
 
     await room?.save()
 
     return Promise.resolve(room)
   } catch (e) {
-    console.error(e)
     throw e
   }
 }

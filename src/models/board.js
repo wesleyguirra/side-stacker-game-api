@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const {getRandomInRange} = require("../helpers");
 module.exports = (sequelize, DataTypes) => {
   class Board extends Model {
     /**
@@ -43,6 +44,23 @@ module.exports = (sequelize, DataTypes) => {
       console.error(e)
       throw e
     }
+  }
+
+  Board.prototype.makeAIMove = function() {
+    const availableSpots = []
+    for (let x = 0; x < this.values?.length; x++) {
+      for (let y = 0; this.values[y]?.length; y++) {
+        const isEmpty = this.values[x][y] === null
+        const isFirst = y === 0
+        const isLast = y === this.values[x].length - 1
+        const siblingFilled = (this.values[x][y - 1] !== null || this.values[x][y + 1] !== null)
+        const canChoosePosition = isEmpty && (isFirst || isLast || siblingFilled)
+        if (canChoosePosition) availableSpots.push([x, y])
+      }
+    }
+
+    const [x, y] = availableSpots[getRandomInRange(0, availableSpots?.length)]
+    return this.updateValues(x, y, 2)
   }
   
   Board.prototype.checkWinner = function() {
